@@ -1,0 +1,30 @@
+[package]
+name = "rustlings-for-llm"
+version = "0.1.0"
+edition = "2021"
+
+# 将每个练习模块作为单独的包
+[workspace]
+members = [
+    "exercises/01_vector_ops",
+    "exercises/02_tensor_compute",
+    "exercises/03_attention_mechanism",
+]
+
+[dependencies]
+rand = "0.8.5"
+
+# 向量操作练习包
+[package.metadata.exercises.vector_ops]
+path = "exercises/01_vector_ops"
+dependencies = []
+
+# 张量计算练习包
+[package.metadata.exercises.tensor_compute]
+path = "exercises/02_tensor_compute"
+dependencies = []
+
+# 注意力机制练习包
+[package.metadata.exercises.attention_mechanism]
+path = "exercises/03_attention_mechanism"
+dependencies = ["rand"]

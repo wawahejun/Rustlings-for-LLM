@@ -1,0 +1,15 @@
+[package]
+name = "attention_mechanism"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+
+[[bin]]
+name = "attention1"
+path = "attention1.rs"
+
+[[bin]]
+name = "attention2"
+path = "attention2.rs"

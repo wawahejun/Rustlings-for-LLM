@@ -1,0 +1,10 @@
+[package]
+name = "tensor_compute"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "tensor_compute1"
+path = "tensor_compute1.rs"
