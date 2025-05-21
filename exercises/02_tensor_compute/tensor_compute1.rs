@@ -18,56 +18,107 @@ pub struct Tensor {
 }
 
 impl Tensor {
-    // TODO: 实现创建指定形状的零张量的函数
+    // 创建指定形状的零张量
     pub fn zeros(shape: Vec<usize>) -> Self {
-        // 在这里实现函数
-        // 提示：计算总元素数，然后创建对应大小的零向量
-        unimplemented!("创建一个形状为 {:?} 的零张量", shape);
+        let size = shape.iter().product();
+        Tensor {
+            data: vec![0.0; size],
+            shape,
+        }
     }
 
-    // TODO: 实现创建指定形状的全1张量的函数
+    // 创建指定形状的全1张量
     pub fn ones(shape: Vec<usize>) -> Self {
-        // 在这里实现函数
-        unimplemented!("创建一个形状为 {:?} 的全1张量", shape);
+        let size = shape.iter().product();
+        Tensor {
+            data: vec![1.0; size],
+            shape,
+        }
     }
 
-    // 获取张量的形状
-    pub fn shape(&self) -> &Vec<usize> {
-        &self.shape
-    }
-
-    // 获取张量的总元素数
-    pub fn size(&self) -> usize {
-        self.data.len()
-    }
-
-    // TODO: 实现获取张量在指定索引处的值
-    // 例如，对于形状为[2,3]的张量，get(&[1,2])应返回第1行第2列的元素
+    // 获取张量在指定索引处的值
     pub fn get(&self, indices: &[usize]) -> Result<f32, String> {
-        // 在这里实现函数
-        // 提示：需要将多维索引转换为一维数组的索引
-        unimplemented!("获取索引 {:?} 处的值", indices);
+        if indices.len() != self.shape.len() {
+            return Err(format!("索引维度({})与张量维度({})不匹配", indices.len(), self.shape.len()));
+        }
+        
+        for (i, &idx) in indices.iter().enumerate() {
+            if idx >= self.shape[i] {
+                return Err(format!("索引越界: 维度{}的索引{}超出范围[0,{})", i, idx, self.shape[i]));
+            }
+        }
+        
+        let mut flat_idx = 0;
+        let mut stride = 1;
+        
+        for i in (0..indices.len()).rev() {
+            flat_idx += indices[i] * stride;
+            stride *= self.shape[i];
+        }
+        
+        Ok(self.data[flat_idx])
     }
 
-    // TODO: 实现设置张量在指定索引处的值
+    // 设置张量在指定索引处的值
     pub fn set(&mut self, indices: &[usize], value: f32) -> Result<(), String> {
-        // 在这里实现函数
-        unimplemented!("设置索引 {:?} 处的值为 {}", indices, value);
+        if indices.len() != self.shape.len() {
+            return Err(format!("索引维度({})与张量维度({})不匹配", indices.len(), self.shape.len()));
+        }
+        
+        for (i, &idx) in indices.iter().enumerate() {
+            if idx >= self.shape[i] {
+                return Err(format!("索引越界: 维度{}的索引{}超出范围[0,{})", i, idx, self.shape[i]));
+            }
+        }
+        
+        let mut flat_idx = 0;
+        let mut stride = 1;
+        
+        for i in (0..indices.len()).rev() {
+            flat_idx += indices[i] * stride;
+            stride *= self.shape[i];
+        }
+        
+        self.data[flat_idx] = value;
+        Ok(())
     }
 
-    // TODO: 实现张量的reshape操作
-    // 注意：新形状的总元素数必须与原形状相同
+    // 张量的reshape操作
     pub fn reshape(&self, new_shape: Vec<usize>) -> Result<Tensor, String> {
-        // 在这里实现函数
-        unimplemented!("将张量从形状 {:?} 重塑为 {:?}", self.shape, new_shape);
+        let new_size: usize = new_shape.iter().product();
+        
+        if new_size != self.data.len() {
+            return Err(format!("新形状的总元素数({})与原形状的总元素数({})不匹配", new_size, self.data.len()));
+        }
+        
+        Ok(Tensor {
+            data: self.data.clone(),
+            shape: new_shape,
+        })
     }
 
-    // TODO: 实现2D张量的转置操作
-    // 注意：此函数仅适用于2D张量（矩阵）
+    // 2D张量的转置操作
     pub fn transpose_2d(&self) -> Result<Tensor, String> {
-        // 在这里实现函数
-        // 提示：检查张量是否为2D，然后交换行和列
-        unimplemented!("转置2D张量");
+        if self.shape.len() != 2 {
+            return Err("转置操作仅支持2D张量".to_string());
+        }
+        
+        let rows = self.shape[0];
+        let cols = self.shape[1];
+        let mut new_data = vec![0.0; rows * cols];
+        
+        for i in 0..rows {
+            for j in 0..cols {
+                let old_idx = i * cols + j;
+                let new_idx = j * rows + i;
+                new_data[new_idx] = self.data[old_idx];
+            }
+        }
+        
+        Ok(Tensor {
+            data: new_data,
+            shape: vec![cols, rows],
+        })
     }
 }
 

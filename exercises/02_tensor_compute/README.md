@@ -12,6 +12,7 @@
 
 - `tensor_compute1.rs`: 张量基础（创建、访问、形状操作）
 - `tensor_compute2.rs`: 张量运算（加法、乘法、转置）
-- `tensor_compute3.rs`: 张量广播和批处理
+- `tensor_compute3.rs`: 张量索引和切片
+- `tensor_compute4.rs`: 张量广播和维度扩展
 
 完成这些练习后，你将掌握在Rust中处理张量的基本技能，为实现大模型的核心计算模块打下基础。
