@@ -1,0 +1,8 @@
+# This configuration file enables a set of features that are primarily
+# useful for the exercises in the Rustlings project.
+
+# Enables the unstable rust-analyzer.diagnostics.enableExperimental
+# configuration option.
+[unstable]
+# Enables experimental diagnostics from rust-analyzer.
+diagnostics = true
