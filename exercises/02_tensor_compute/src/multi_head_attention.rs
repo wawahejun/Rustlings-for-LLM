@@ -1,7 +1,7 @@
 // 在Transformer架构中，多头注意力是一个核心组件。
 // 在这个练习中，我们将实现多头注意力中的关键张量运算。
 
-// TODO: 实现张量形状变换函数，用于多头注意力中的头部分割
+// 实现张量形状变换函数，用于多头注意力中的头部分割
 // 输入张量形状为 [batch_size, seq_len, hidden_size]
 // 输出张量形状为 [batch_size, num_heads, seq_len, head_size]
 // 其中 hidden_size = num_heads * head_size
@@ -9,19 +9,60 @@ fn reshape_for_attention(
     input: &[Vec<Vec<f32>>],
     num_heads: usize
 ) -> Vec<Vec<Vec<Vec<f32>>>> {
-    unimplemented!("请实现头部分割的张量形状变换")
+    let batch_size = input.len();
+    let seq_len = input[0].len();
+    let hidden_size = input[0][0].len();
+    let head_size = hidden_size / num_heads;
+    
+    input.iter()
+        .map(|batch| {
+            batch.iter()
+                .map(|seq| {
+                    seq.chunks(head_size)
+                        .map(|chunk| chunk.to_vec())
+                        .collect::<Vec<Vec<f32>>>()
+                })
+                .collect::<Vec<Vec<Vec<f32>>>>()
+        })
+        .map(|batch_heads| {
+            (0..num_heads)
+                .map(|h| {
+                    (0..seq_len)
+                        .map(|s| batch_heads[s][h].clone())
+                        .collect::<Vec<Vec<f32>>>()
+                })
+                .collect::<Vec<Vec<Vec<f32>>>>()
+        })
+        .collect()
 }
 
-// TODO: 实现张量转置函数
+// 实现张量转置函数
 // 输入张量形状为 [batch_size, num_heads, seq_len, head_size]
 // 输出张量形状为 [batch_size, num_heads, head_size, seq_len]
 fn transpose_for_scores(
     x: &[Vec<Vec<Vec<f32>>>]
 ) -> Vec<Vec<Vec<Vec<f32>>>> {
-    unimplemented!("请实现注意力分数计算前的张量转置")
+    x.iter()
+        .map(|batch| {
+            batch.iter()
+                .map(|head| {
+                    let seq_len = head.len();
+                    let head_size = head[0].len();
+                    
+                    (0..head_size)
+                        .map(|h| {
+                            (0..seq_len)
+                                .map(|s| head[s][h])
+                                .collect::<Vec<f32>>()
+                        })
+                        .collect::<Vec<Vec<f32>>>()
+                })
+                .collect::<Vec<Vec<Vec<f32>>>>()
+        })
+        .collect()
 }
 
-// TODO: 实现注意力分数的批量计算
+// 实现注意力分数的批量计算
 // query形状: [batch_size, num_heads, seq_len, head_size]
 // key形状: [batch_size, num_heads, head_size, seq_len]
 // 输出形状: [batch_size, num_heads, seq_len, seq_len]
@@ -29,7 +70,37 @@ fn batch_matmul(
     query: &[Vec<Vec<Vec<f32>>>],
     key: &[Vec<Vec<Vec<f32>>>]
 ) -> Vec<Vec<Vec<Vec<f32>>>> {
-    unimplemented!("请实现批量矩阵乘法计算注意力分数")
+    let batch_size = query.len();
+    let num_heads = query[0].len();
+    let seq_len_q = query[0][0].len();
+    let head_size = query[0][0][0].len();
+    let seq_len_k = key[0][0][0].len();
+    
+    assert_eq!(head_size, key[0][0].len(), "Head size mismatch");
+    
+    (0..batch_size)
+        .map(|b| {
+            (0..num_heads)
+                .map(|h| {
+                    let q = &query[b][h];
+                    let k = &key[b][h];
+                    
+                    (0..seq_len_q)
+                        .map(|i| {
+                            (0..seq_len_k)
+                                .map(|j| {
+                                    q[i].iter()
+                                        .zip(k[j].iter())
+                                        .map(|(&a, &b)| a * b)
+                                        .sum::<f32>()
+                                })
+                                .collect::<Vec<f32>>()
+                        })
+                        .collect::<Vec<Vec<f32>>>()
+                })
+                .collect::<Vec<Vec<Vec<f32>>>>()
+        })
+        .collect()
 }
 
 #[cfg(test)]

@@ -5,19 +5,17 @@
 // 输入: 一个f32向量
 // 输出: 均值 (单个f32值)
 fn compute_mean(x: &[f32]) -> f32 {
-    // 提示: 使用 x.iter().sum::<f32>() / x.len() as f32
-    unimplemented!("请实现均值计算")
+    x.iter().sum::<f32>() / x.len() as f32
 }
 
 // TODO: 计算向量的标准差
 // 输入: 一个f32向量和它的均值
 // 输出: 标准差 (单个f32值)
 fn compute_std(x: &[f32], mean: f32) -> f32 {
-    // 提示: sqrt(平均平方差)
-    // 1. 计算每个元素与均值的差的平方
-    // 2. 求平均值
-    // 3. 开平方根
-    unimplemented!("请实现标准差计算")
+    let variance = x.iter()
+        .map(|&v| (v - mean).powi(2))
+        .sum::<f32>() / x.len() as f32;
+    variance.sqrt()
 }
 
 // TODO: 实现简单的层归一化
@@ -25,7 +23,12 @@ fn compute_std(x: &[f32], mean: f32) -> f32 {
 // 输出: 归一化后的向量
 // 公式: (x - mean) / (std + epsilon) * gamma + beta
 fn layer_norm(x: &[f32], gamma: f32, beta: f32, epsilon: f32) -> Vec<f32> {
-    unimplemented!("请实现层归一化")
+    let mean = compute_mean(x);
+    let std = compute_std(x, mean);
+    
+    x.iter()
+        .map(|&v| ((v - mean) / (std + epsilon)) * gamma + beta)
+        .collect()
 }
 
 // TODO: 批量层归一化
@@ -33,7 +36,9 @@ fn layer_norm(x: &[f32], gamma: f32, beta: f32, epsilon: f32) -> Vec<f32> {
 // 输入: 多个向量组成的2D数组
 // 输出: 归一化后的2D数组
 fn batch_layer_norm(batch: &[Vec<f32>], gamma: f32, beta: f32, epsilon: f32) -> Vec<Vec<f32>> {
-    unimplemented!("请实现批量层归一化")
+    batch.iter()
+        .map(|x| layer_norm(x, gamma, beta, epsilon))
+        .collect()
 }
 
 #[cfg(test)]
