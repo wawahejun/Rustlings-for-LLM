@@ -12,19 +12,27 @@ fn vector_add(v1: &[f32], v2: &[f32]) -> Vec<f32> {
 // TODO: 实现向量乘以标量函数
 // 将向量的每个元素乘以一个标量
 fn vector_scale(v: &[f32], scale: f32) -> Vec<f32> {
-    unimplemented!("请实现向量乘以标量")
+    v.iter()
+        .map(|&x| x * scale)
+        .collect()
 }
 
 // TODO: 实现ReLU激活函数的前向传播
 // f(x) = max(0, x)
 fn relu_forward(x: &[f32]) -> Vec<f32> {
-    unimplemented!("请实现ReLU前向传播")
+    x.iter()
+        .map(|&x| x.max(0.0))
+        .collect()
 }
 
 // TODO: 实现ReLU激活函数的反向传播
 // 给定上游梯度和前向传播的输入，计算ReLU的梯度
 fn relu_backward(upstream_grad: &[f32], x: &[f32]) -> Vec<f32> {
-    unimplemented!("请实现ReLU反向传播")
+    assert_eq!(upstream_grad.len(), x.len(), "向量长度必须相同");
+    upstream_grad.iter()
+        .zip(x.iter())
+        .map(|(&grad, &input)| if input > 0.0 { grad } else { 0.0 })
+        .collect()
 }
 
 
