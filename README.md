@@ -16,7 +16,7 @@
 
 1. **向量操作基础** - 学习如何在Rust中高效处理向量和矩阵
 2. **张量计算** - 实现基本的张量操作和计算
-3. **注意力机制** - 实现Transformer架构中的注意力机制
+3. **混合精度** - 了解half库混合精度推理的原理
 4. **并行计算** - 使用Rust的并发特性优化大模型计算
 5. **模型推理** - 实现简化版的模型推理流程
 
@@ -42,8 +42,3 @@
 git clone https://github.com/yourusername/Rustlings-for-LLM.git
 cd Rustlings-for-LLM
 
-# 运行特定练习
-cargo test -p vector_ops
-```
-
-祝您学习愉快！
